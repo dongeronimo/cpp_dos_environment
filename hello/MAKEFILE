@@ -1,0 +1,17 @@
+DEPS = vector.h
+obj = main.obj hello.obj vector.obj
+bin = hello.exe
+
+CC = wpp386
+CFLAGS = -zq
+LD = wlink
+
+$(bin): $(obj)
+	$(LD) name $@ file { $(obj) }
+
+.c.obj:
+	$(CC) -fo=$@ $(CFLAGS) $<
+
+clean: .symbolic
+	del *.obj
+	del $(bin) 
