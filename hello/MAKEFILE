@@ -1,5 +1,5 @@
 DEPS = vector.h
-obj = main.obj hello.obj vector.obj
+obj = main.obj hello.obj vector.obj video.obj input.obj utils.obj
 bin = hello.exe
 
 CC = wpp386

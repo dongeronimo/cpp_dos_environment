@@ -1,13 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <cassert>
 #include "VECTOR.H"
 
-
-Vector::Vector()
-{
-    printf("vector init\n");
-}
-
-Vector::~Vector()
-{
-    printf("vector delete\n");
-}

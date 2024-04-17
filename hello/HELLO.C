@@ -3,7 +3,6 @@
 
 
 void hello(void)
-{
-    Vector foobar;
+{   
     printf("hello world\n");
 }
