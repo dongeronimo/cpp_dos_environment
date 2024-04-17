@@ -15,9 +15,9 @@ int main(void)
     bool isRunning = true;
     while(isRunning){
         inputSystem.EvaluateKeyHit();
-        if(inputSystem.LastKeyHit()!=INPUT_SYSTEM_NO_KEY){
+        if(inputSystem.LastKeyHit()!=KEY_NONE){
             switch(inputSystem.LastKeyHit()){
-            case INPUT_SYSTEM_ESC:
+            case KEY_ESC:
                 isRunning = false;
                 break;
             default:
@@ -28,18 +28,6 @@ int main(void)
         }
     }
     set_mode(MODE_TEXT);
-    // set_mode(MODE_256_COLOR);
-    // //... The game here
-    // while(!exit_game){
-    //     inputSystem.EvaluateKeyHit();
-    //     switch(inputSystem.LastKeyHit()){
-    //         case INPUT_SYSTEM_ESC:
-    //             return 0;
-    //         default:            
-    //             printf("key %s\n", inputSystem.LastKeyHit());
-    //     } 
-    // }
-    // //finishing the game, must return the mode to the defaul
-    // set_mode(MODE_TEXT);
+
     return 0;
 }
