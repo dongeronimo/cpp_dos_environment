@@ -11,7 +11,8 @@ bool exit_game = false;
 int main(void)
 {
     InputSystem inputSystem;
-    set_mode(MODE_256_COLOR);
+    VideoSystem videoSystem;
+    videoSystem.SetClearColor(3);
     bool isRunning = true;
     while(isRunning){
         inputSystem.EvaluateKeyHit();
@@ -20,14 +21,12 @@ int main(void)
             case KEY_ESC:
                 isRunning = false;
                 break;
-            default:
-                printf("key pressed: %c = %d \n", inputSystem.LastKeyHit(), 
-                inputSystem.LastKeyHit());        
-
+            // default:
+            //     // printf("key pressed: %c = %d \n", inputSystem.LastKeyHit(), 
+            //     // inputSystem.LastKeyHit());        
             }
         }
+        videoSystem.Draw();
     }
-    set_mode(MODE_TEXT);
-
     return 0;
 }
