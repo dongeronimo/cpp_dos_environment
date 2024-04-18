@@ -30,6 +30,9 @@
         "MAIN.C": "cpp",
         "VIDEO.C": "cpp",
         "INPUT.C": "cpp",
-        "UTILS.C": "cpp"
+        "UTILS.C": "cpp",
+        "GAMEOBJS.C": "cpp",
+        "LOADBMP.C": "cpp",
+        "LOGGER.C": "cpp"
     }
 }
