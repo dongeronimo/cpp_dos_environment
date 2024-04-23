@@ -1,4 +1,4 @@
-
+#define DEBUG
 #include "VIDEO.H"
 #include "INPUT.H"
 #include "UTILS.H"
@@ -10,36 +10,33 @@
 
 bool exit_game = false;
 
-
 int main(void)
 {
-    InitLogger();
-    Log("Begin\n");
+    //startup
+    InitLogger();//The logger writes to file. I need this because i have no debuggers in this environment.
+    Log("Beginning startup\n");
+    InputSystem inputSystem;
+    VideoSystem videoSystem;
+    Log("Loading assets\n");
     Image img;
     Color palette[256];
-    uint16_t result = LoadPCX("face2.pcx", img, palette);
-    Log("---Final image---\n");
-    for (int y = 0; y < img.Height; y++) {
-        for (int x = 0; x < img.Width; x++) {
-            Log(log_bit_mask, img.Scanlines[y][x]);
+    LoadFromFile("br.pcx", img, palette);
+    //stores the palette in the vga
+    //main game loop
+    while(!exit_game){
+        inputSystem.EvaluateKeyHit();
+        if(inputSystem.LastKeyHit()!=KEY_NONE){
+            switch(inputSystem.LastKeyHit()){
+                case KEY_ESC:
+                exit_game  = true;
+                break;
+            }
         }
-        Log("\n");
+        videoSystem.ClearBuffer();
+        //do draw here
+        videoSystem.Present();
     }
-    Log("---Palette---\n");
-    for (int i = 0; i < 256; i++) {
-        Log("ID:%#04X R:%d G:%d B:%d \n",i, palette[i].r, palette[i].g, palette[i].b);
-    }
-    // Image* img = load_pcx("pcx_test.pcx");
-    // for(int i=0; i<img->width * img->height; i++){
-    //     if(i%img->width == 0){
-    //         Log("\n");
-    //     }
-    //     Log("%#08X ", img->pixels[i]);
-    // }
-    // VideoSystem videoSystem;
-    // t_pic* pic = load_pcx("test2.pcx");
-    // int result = LoadBMP("A.bmp", &videoSystem);
-    
+
     // InputSystem inputSystem;
     // VideoSystem videoSystem;
     // videoSystem.SetClearColor(1);

@@ -32,7 +32,7 @@ VideoSystem::~VideoSystem()
 void VideoSystem::SetDAC(uint8_t DAC, uint8_t r, uint8_t g, uint8_t b)
 {
 }
-void VideoSystem::ClearScreen()
+void VideoSystem::ClearBuffer()
 {
     clear_screen(mClearColor);
 }
