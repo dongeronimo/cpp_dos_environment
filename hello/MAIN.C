@@ -1,22 +1,45 @@
-//includes
-// #include <conio.h>
-// #include <dos.h>
-// #include <i86.h>
-// #include <stdio.h>
+
 #include "VIDEO.H"
 #include "INPUT.H"
 #include "UTILS.H"
 #include "GAMEOBJS.H"
-#include "LOADBMP.H"
+// #include "LOADBMP.H"
 #include "LOGGER.H"
+#include "LOADPCX.H"
+#include <assert.h>
 
 bool exit_game = false;
+
 
 int main(void)
 {
     InitLogger();
-    Print("foobar? %d, %s", 10, "foo?");
-    int result = LoadBMP("soldier.bmp");
+    Log("Begin\n");
+    Image img;
+    Color palette[256];
+    uint16_t result = LoadPCX("face2.pcx", img, palette);
+    Log("---Final image---\n");
+    for (int y = 0; y < img.Height; y++) {
+        for (int x = 0; x < img.Width; x++) {
+            Log(log_bit_mask, img.Scanlines[y][x]);
+        }
+        Log("\n");
+    }
+    Log("---Palette---\n");
+    for (int i = 0; i < 256; i++) {
+        Log("ID:%#04X R:%d G:%d B:%d \n",i, palette[i].r, palette[i].g, palette[i].b);
+    }
+    // Image* img = load_pcx("pcx_test.pcx");
+    // for(int i=0; i<img->width * img->height; i++){
+    //     if(i%img->width == 0){
+    //         Log("\n");
+    //     }
+    //     Log("%#08X ", img->pixels[i]);
+    // }
+    // VideoSystem videoSystem;
+    // t_pic* pic = load_pcx("test2.pcx");
+    // int result = LoadBMP("A.bmp", &videoSystem);
+    
     // InputSystem inputSystem;
     // VideoSystem videoSystem;
     // videoSystem.SetClearColor(1);

@@ -33,6 +33,7 @@
         "UTILS.C": "cpp",
         "GAMEOBJS.C": "cpp",
         "LOADBMP.C": "cpp",
-        "LOGGER.C": "cpp"
+        "LOGGER.C": "cpp",
+        "cassert": "cpp"
     }
 }

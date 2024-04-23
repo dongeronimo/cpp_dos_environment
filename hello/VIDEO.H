@@ -24,7 +24,7 @@ public:
     VideoSystem();
     /// @brief Goes back to mode 3h
     ~VideoSystem();
-
+    void SetDAC(uint8_t DAC, uint8_t r, uint8_t g, uint8_t b);
     void ClearScreen();
     /// @brief Draw the scenes
     /// @param x 

@@ -10,11 +10,10 @@ void InitLogger()
     f = fopen("log.txt", "a+");
 }
 
-void Print(char *str, ...)
+void Log(char *str, ...)
 {
     va_list ptr;
     va_start(ptr, str);
     vfprintf(f, str, ptr);
-    // fprintf(f, str, ptr);
     va_end(ptr);
 }

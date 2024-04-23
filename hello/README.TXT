@@ -10,3 +10,8 @@ c:\hello> wlink name hello.exe file { main.obj hello.obj }
 
 Or using the makefile
 c:\hello> wmake
+
+
+
+https://opengameart.org/content/mv-platformer-skeleton
+https://opengameart.org/content/goblin-corps-mv-platformer-set

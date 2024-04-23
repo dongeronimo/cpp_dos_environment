@@ -29,7 +29,11 @@ VideoSystem::~VideoSystem()
 {
     set_mode(MODE_TEXT);
 }
-void VideoSystem::ClearScreen() {
+void VideoSystem::SetDAC(uint8_t DAC, uint8_t r, uint8_t g, uint8_t b)
+{
+}
+void VideoSystem::ClearScreen()
+{
     clear_screen(mClearColor);
 }
 void VideoSystem::Draw(const GameObject& obj){
