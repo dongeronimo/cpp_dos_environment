@@ -35,5 +35,6 @@
         "LOADBMP.C": "cpp",
         "LOGGER.C": "cpp",
         "cassert": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

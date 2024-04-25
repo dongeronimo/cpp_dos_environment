@@ -1,9 +1,12 @@
+#define _M_IX86
 #include "video.h"
 #include <dos.h>
 #include <i86.h>
 #include <stdio.h>
 #include <string.h>
+#include "LOADPCX.H"
 #include "GAMEOBJS.H"
+#include <conio.h>
 byte_t *VGA = (byte_t*)0xA0000L;
 
 byte_t backbuffer[MODE_013_ARRAY_SIZE];
@@ -22,6 +25,7 @@ void clear_screen(byte_t color)
 
 VideoSystem::VideoSystem()
 {
+    Log("Set video mode to 13h\n");
     set_mode(MODE_256_COLOR);
 }
 
@@ -29,9 +33,17 @@ VideoSystem::~VideoSystem()
 {
     set_mode(MODE_TEXT);
 }
-void VideoSystem::SetDAC(uint8_t DAC, uint8_t r, uint8_t g, uint8_t b)
+
+void VideoSystem::SetPalette(Color *table)
 {
+    for(uint8_t i=0; i<255; i++){
+        outp(0x03c8, i);
+        outp(0x03c9, table[i].r);
+        outp(0x03c9, table[i].g);
+        outp(0x03c9, table[i].b);
+    }
 }
+
 void VideoSystem::ClearBuffer()
 {
     clear_screen(mClearColor);

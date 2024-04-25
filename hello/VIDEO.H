@@ -15,7 +15,7 @@ void set_mode(byte_t mode);
 void clear_screen(byte_t color);
 
 class GameObject;
-
+struct Color;
 class VideoSystem{
 private:
     uint8_t mClearColor;
@@ -24,7 +24,7 @@ public:
     VideoSystem();
     /// @brief Goes back to mode 3h
     ~VideoSystem();
-    void SetDAC(uint8_t DAC, uint8_t r, uint8_t g, uint8_t b);
+    void SetPalette(Color* table);
     void ClearBuffer();
     /// @brief Draw the scenes
     /// @param x 

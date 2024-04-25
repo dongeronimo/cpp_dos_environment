@@ -1,4 +1,5 @@
-#define DEBUG
+#undef DEBUG
+#define _M_IX86
 #include "VIDEO.H"
 #include "INPUT.H"
 #include "UTILS.H"
@@ -7,9 +8,18 @@
 #include "LOGGER.H"
 #include "LOADPCX.H"
 #include <assert.h>
-
+#include <conio.h>
+#include <dos.h>
 bool exit_game = false;
 
+volatile uint32_t clockTicks = 0;
+void (__interrupt __far *prev_int_1c)();
+//https://stanislavs.org/helppc/int_1c.html
+//Called by int8, around 18.206 times per second
+void __interrupt __far Tick(){
+    ++clockTicks;
+    _chain_intr( prev_int_1c );
+}
 int main(void)
 {
     //startup
@@ -17,69 +27,38 @@ int main(void)
     Log("Beginning startup\n");
     InputSystem inputSystem;
     VideoSystem videoSystem;
+    videoSystem.SetClearColor(1);
     Log("Loading assets\n");
     Image img;
-    Color palette[256];
-    LoadFromFile("br.pcx", img, palette);
+    Color palette[255];
+    LoadFromFile("masked.pcx", img, palette);
     //stores the palette in the vga
-    //main game loop
+    Log("Setting palette\n");
+    videoSystem.SetPalette(palette);
+    Log("Set tick interrupt\n");
+    prev_int_1c = _dos_getvect( 0x1c );
+    _dos_setvect(0x1c, Tick);
+    Log("Done\n");
+    // //main game loop
     while(!exit_game){
         inputSystem.EvaluateKeyHit();
         if(inputSystem.LastKeyHit()!=KEY_NONE){
             switch(inputSystem.LastKeyHit()){
                 case KEY_ESC:
-                exit_game  = true;
-                break;
+                    Log("Key Pressed: esc\m");
+                    exit_game  = true;
+                    break;
+                default:
+                    Log("Key Pressed = %#08X \n", inputSystem.LastKeyHit());
             }
         }
         videoSystem.ClearBuffer();
         //do draw here
+        Log("tick: %d\n", clockTicks);
         videoSystem.Present();
     }
-
-    // InputSystem inputSystem;
-    // VideoSystem videoSystem;
-    // videoSystem.SetClearColor(1);
-    // uint8_t  sprite[] = {4, 4, 4, 4, 4,4,
-    //                            4,12,12,12,12,4,
-    //                            4,12, 0, 0,12,4,
-    //                            4,12, 0, 0,12,4,
-    //                            4,12,12,12,12,4,
-    //                            4, 4, 4, 4, 4,4};
-    // GameObject helloWorld(6, 6 , sprite);
-    // bool isRunning = true;
-    // while(isRunning){
-    //     inputSystem.EvaluateKeyHit();
-    //     if(inputSystem.LastKeyHit()!=KEY_NONE){
-    //         switch(inputSystem.LastKeyHit()){
-    //         case KEY_ESC:
-    //             isRunning = false;
-    //             break;
-    //         case KEY_UP:
-    //             if(helloWorld.Y() > 0)
-    //                 helloWorld.Move(0, -1);
-    //             break;
-    //         case KEY_DOWN:
-    //             if(helloWorld.Y() < MODE_013_HEIGHT - helloWorld.mHeight)
-    //                 helloWorld.Move(0, 1);
-    //             break;
-    //         case KEY_LEFT:
-    //             if(helloWorld.X() > 0)
-    //                 helloWorld.Move(-1, 0);
-    //             break;
-    //         case KEY_RIGHT:
-    //             if(helloWorld.X() < MODE_013_WIDTH - helloWorld.mWidth)
-    //                 helloWorld.Move(1, 0);
-    //             break;      
-    //         }
-    //     }
-    //     videoSystem.ClearScreen();
-    //     videoSystem.Draw(helloWorld);
-    //     //...
-    //     videoSystem.Present();
-    //     // GameObject objs[] = {helloWorld};
-    //     // videoSystem.Draw(objs, 1);
-    //     // Wait(10);
-    // }
+    //restore 0x1c's previous interrupt handler, its good practice to put the DOS state back to what it
+    //was before I messed around
+    _dos_setvect( 0x1c, prev_int_1c );
     return 0;
 }

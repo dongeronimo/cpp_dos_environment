@@ -16,4 +16,5 @@ void Log(char *str, ...)
     va_start(ptr, str);
     vfprintf(f, str, ptr);
     va_end(ptr);
+    fflush(f);
 }
