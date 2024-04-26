@@ -1,6 +1,6 @@
 #include "UTILS.H"
 #include <limits.h>
-#include <dos.h>
+#include <conio.h>
 #include <i86.h>
 
 void Wait(const uint32_t milisseconds)

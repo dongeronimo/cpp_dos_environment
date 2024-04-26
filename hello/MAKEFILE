@@ -3,7 +3,7 @@ obj = logger.obj main.obj video.obj input.obj utils.obj gameobjs.obj
 bin = hello.exe
 
 CC = wpp386
-CFLAGS = -zq -4s -er -hw
+CFLAGS = -d0 -s -zq -4s -er -oa -ob -oc -e=10 -oh -ol+ -om -or -ot
 LD = wlink
 
 $(bin): $(obj)

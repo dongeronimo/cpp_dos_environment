@@ -6,7 +6,7 @@
 #define __loadpcx_h
 #include "LOGGER.H"
 #include <stdio.h> 
-#include <sys\types.h>
+#include "IMAGE.H"
 #include <stdlib.h>
 #include <string.h>
 #include <cassert>
@@ -14,11 +14,6 @@
 typedef uint16_t WORD;
 typedef uint8_t BYTE;
 
-struct Image {
-    uint16_t Width;
-    uint16_t Height;
-    uint8_t** Scanlines;
-};
 
 typedef struct _PcxHeader
 {

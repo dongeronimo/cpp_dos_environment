@@ -34,7 +34,8 @@
         "GAMEOBJS.C": "cpp",
         "LOADBMP.C": "cpp",
         "LOGGER.C": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "cmath": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
