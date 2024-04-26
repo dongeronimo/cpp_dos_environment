@@ -48,25 +48,7 @@ void VideoSystem::ClearBuffer()
 {
     clear_screen(mClearColor);
 }
-void VideoSystem::Draw(const GameObject& obj){
-    // uint16_t offsetInVideoMemory = MODE_013_WIDTH * obj.Y() + obj.X();
-    // for(int x = 0; x<obj.mWidth; x++){
-    //     for(int y = 0; y<obj.mHeight;y++){
-    //         uint16_t offsetInVideoMemory = MODE_013_WIDTH * y + x;
-    //         backbuffer[offsetInVideoMemory] = 5;
-    //     }
-    // }
-    
-/////    desenha mas tá errado na tela - ptos ao invés de contínuo    
-    for(int i=0; i<obj.mWidth * obj.mHeight; i++){
-        int imgX = i % obj.mWidth;
-        int imgY = i / obj.mWidth;
-        int positionInBuffer = MODE_013_WIDTH * (obj.Y() + imgY) + (obj.X() + imgX);
-        if(obj.mImage[i] != 0)
-            backbuffer[positionInBuffer] = obj.mImage[i];
-    }
-    Present();
-}
+
 
 void VideoSystem::DrawImage(const Image& img, //what to draw 
         int16_t x, //where to draw
@@ -108,70 +90,37 @@ void VideoSystem::DrawImage(const Image& img, //what to draw
     if(y+img.Height > MODE_013_HEIGHT){
         srcYf = img.Height - (y+img.Height - MODE_013_HEIGHT);
     }
-    Log("Dest: x[%d,%d],y[%d, %d]\n", dstX0, dstXf, dstY0, dstYf);
-    Log("Src: x[%d,%d],y[%d, %d]\n", srcX0, srcXf, srcY0, srcYf);
+    // Log("Dest: x[%d,%d],y[%d, %d]\n", dstX0, dstXf, dstY0, dstYf);
+    // Log("Src: x[%d,%d],y[%d, %d]\n", srcX0, srcXf, srcY0, srcYf);
     //now that i have the ranges I can copy from the image to the backbuffer
-    uint32_t sY=srcY0;
-    for(uint32_t dY=dstY0; dY<dstY0+(srcYf-srcY0); dY++){
-        uint32_t sX=srcX0;
-        for(uint32_t dX=dstX0; dX<dstX0+(srcXf-srcX0); dX++){
-            uint32_t dIdx = dY * MODE_013_WIDTH + dX;
-            backbuffer[dIdx] = img.Scanlines[sY][sX];
-            sX++;
+    if(!transparent){
+        //if it's not transparent i can just memcpy the scanlines into the backbuffer,
+        //minding the ranges calculated above
+        uint32_t sY=srcY0;
+        uint32_t dIdx;
+        for(uint32_t dY = dstY0; dY<dstY0+(srcYf-srcY0); dY++){
+            dIdx = dY * MODE_013_WIDTH + dstX0;
+            // Log("dY=%d, dIdx=%d\n, srcXf-srcX0",dY, dIdx, );
+            memcpy(&backbuffer[dIdx], &img.Scanlines[sY][srcX0], srcXf -srcX0 );
+            sY++;
+        }  
+    }else{
+        //Can't use memcpy if using transparency because i must compare each pixel and only
+        //write it isn't 0x00
+        uint32_t sY=srcY0;
+        for(uint32_t dY=dstY0; dY<dstY0+(srcYf-srcY0); dY++){
+            uint32_t sX=srcX0;
+            for(uint32_t dX=dstX0; dX<dstX0+(srcXf-srcX0); dX++){
+                uint32_t dIdx = dY * MODE_013_WIDTH + dX;
+                uint8_t srcPixel = img.Scanlines[sY][sX];
+                if(srcPixel != 0x00)
+                    backbuffer[dIdx] = srcPixel; 
+                sX++;
+            }
+            sY++;
         }
-        sY++;
     }
-
-    //now that i know that i have to draw the image, I have to calculate
-    //the x and y range in the origin (in the image) and in the 
-    //destination (in the backbuffer)
-    // int16_t srcX0 = 0;
-    // if(x < 0){
-    //     srcX0 = img.Width - (img.Width + x);
-    // }
-    // int16_t srcY0 = 0;
-    // if(y < 0){
-    //     srcY0 = img.Height -(img.Height + y);
-    // }
-    // int16_t srcXf = img.Width;
-    // if(x >= MODE_013_WIDTH - img.Width){
-    //     srcXf = img.Width - (x + img.Width - MODE_013_WIDTH);
-    // }
-    // int16_t srcYf = img.Height;
-    // if(x >= MODE_013_HEIGHT - img.Height){
-    //     srcYf = img.Height - (y + img.Height - MODE_013_HEIGHT);
-    // }
-    // Log("src x0=%d xf=%d y0=%d yf=%d\n", srcX0, srcXf, srcY0, srcYf);
-    // int16_t destX0 = x;
-    // if(x<0){
-    //     destX0 = 0;
-    // }
-    // int16_t destY0 = y;
-    // if(y<0){
-    //     destY0 = 0;
-    // }
-    // int16_t destXf = x + img.Width;
-    // if(destXf > MODE_013_WIDTH){
-    //     destXf = MODE_013_WIDTH;
-    // }
-    // int16_t destYf = y + img.Height;
-    // if(destYf > MODE_013_HEIGHT){
-    //     destYf = MODE_013_HEIGHT;
-    // }
-    // int destY = destY0;
-    // for(int srcy = srcY0; srcy<srcYf; srcy++){
-    //     int destX = destX0;
-    //     for(int srcx=srcX0; srcx<srcXf; srcx++){
-    //         int indexInDest = destY * MODE_013_WIDTH + destX;
-    //         int srcLn = srcy - srcY0;
-    //         int srcCol = srcx - srcX0;
-    //         uint8_t srcPixel =  img.Scanlines[srcLn][srcCol];
-    //         if(srcPixel != 0x00);
-    //             backbuffer[indexInDest] = img.Scanlines[srcLn][srcCol];
-    //         destX++;
-    //     }
-    //     destY++;
-    // }
+    
 }
 
 void VideoSystem::Present()

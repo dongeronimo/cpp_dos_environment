@@ -1,4 +1,4 @@
-#undef DEBUG
+// #undef DEBUG
 #define _M_IX86
 #include "VIDEO.H"
 #include "INPUT.H"
@@ -55,7 +55,8 @@ int main(void)
     Log("Loading assets\n");
     Image img;
     Color palette[255];
-    LoadFromFile("masked.pcx", img, palette);
+    uint32_t err = LoadFromFile("hero.pcx", img, palette);
+    Log("load result = %d\n", err);
     //stores the palette in the vga
     Log("Setting palette\n");
     videoSystem.SetPalette(palette);
@@ -64,7 +65,7 @@ int main(void)
     Log("Set tick interrupt\n");
     SetTickFunction();
     Log("Done\n");
-    
+    Log("Beginning game loop\n");
     // //main game loop
     while(!exit_game){
         inputSystem.EvaluateKeyHit();
@@ -79,13 +80,7 @@ int main(void)
             }
         }
         videoSystem.ClearBuffer();
-        videoSystem.DrawImage(img, 100, 100,false);
-        videoSystem.DrawImage(img, -16, 100,false);
-        videoSystem.DrawImage(img, 304, 40,false);
-        videoSystem.DrawImage(img, 100, -16,false);
-        videoSystem.DrawImage(img, 140, 184,false);
-        videoSystem.DrawImage(img, 200, 100, true);
-        videoSystem.DrawImage(img, 30, 0, true);
+        videoSystem.DrawImage(img, 0, 0,true);
         //do draw here
         // Log("tick: %d\n", clockTicks);
         videoSystem.Present();

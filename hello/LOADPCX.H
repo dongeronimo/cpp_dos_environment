@@ -75,6 +75,7 @@ static uint32_t LoadPCX(const char* image, Image& img, Color* palette) {
     memset(&header, 0, sizeof(PCXHEAD));
     fread(&header, sizeof(PCXHEAD), 1, f);
     uint32_t posAfterReadingHeader = ftell(f);
+    // Log("pos after read = %d\n", posAfterReadingHeader);
     //I MUST be at 128 after reading the header to read the scanlines.
     assert(posAfterReadingHeader == 128);
     //validações
@@ -103,15 +104,15 @@ static uint32_t LoadPCX(const char* image, Image& img, Color* palette) {
     uint16_t ImageWidth = header.XEnd - header.XStart + 1;
     uint16_t ImageHeight = header.YEnd - header.YStart + 1;
     uint16_t ScanlineLength = header.NumBitPlanes * header.BytesPerLine;
-    uint16_t LinePaddingSize = ((header.BytesPerLine * header.NumBitPlanes) *
-        (8 / header.BitsPerPixel)) - ((header.XEnd - header.XStart) + 1);
+    // uint16_t LinePaddingSize = ((header.BytesPerLine * header.NumBitPlanes) *
+    //     (8 / header.BitsPerPixel)) - ((header.XEnd - header.XStart) + 1);
 
     uint8_t* ScanlineBuffer = new uint8_t[ScanlineLength];
     memset(ScanlineBuffer, 0xFF, ScanlineLength);
-    uint16_t index = 0;
+    uint32_t index = 0;
     uint8_t runcount = 0;
     uint8_t runvalue = 0;
-    uint8_t scanlineCursor = 0;
+    uint32_t scanlineCursor = 0;
     //prepara a struct
     img.Width = ImageWidth;
     img.Height = ImageHeight;
@@ -160,40 +161,40 @@ static uint32_t LoadPCX(const char* image, Image& img, Color* palette) {
 
 static uint16_t LoadFromFile(const char* filename, Image& bitmap, Color* palette){
     uint16_t result = LoadPCX(filename, bitmap, palette);
-    #ifdef DEBUG
-    switch (result)
-    {
-    case LOAD_PCX_INVALID_FORMAT:
-        Log("Error: invalid format\n");
-        return result;
-    case LOAD_PCX_INVALID_ENCODING:
-        Log("Error: invalid encoding\n");
-        return result;
-    case LOAD_PCX_INVALID_VERSION:
-        Log("Error: invalid version\n");
-        return result;
-    case LOAD_PCX_INVALID_BITS_PER_PIXEL:
-        Log("Error: invalid bits per pixel\n");
-        return result;
-    case LOAD_PCX_INVALID_BIT_PLANES:
-        Log("Error: invalid bitplanes\n");
-        return result;
-    case LOAD_PCX_NO_PALETTE:
-        Log("Warn: No palette\n");
-        break;
-    }
-    Log("---%s---\n", filename);
-    for (int y = 0; y < bitmap.Height; y++) {
-        for (int x = 0; x < bitmap.Width; x++) {
-            Log(log_bit_mask, bitmap.Scanlines[y][x]);
-        }
-        Log("\n");
-    }
-    Log("---Palette---\n");
-    for (int i = 0; i < 255; i++) {
-        Log("ID:%#04X R:%d G:%d B:%d \n",i, palette[i].r, palette[i].g, palette[i].b);
-    }
-    #endif
+
+    // switch (result)
+    // {
+    // case LOAD_PCX_INVALID_FORMAT:
+    //     Log("Error: invalid format\n");
+    //     return result;
+    // case LOAD_PCX_INVALID_ENCODING:
+    //     Log("Error: invalid encoding\n");
+    //     return result;
+    // case LOAD_PCX_INVALID_VERSION:
+    //     Log("Error: invalid version\n");
+    //     return result;
+    // case LOAD_PCX_INVALID_BITS_PER_PIXEL:
+    //     Log("Error: invalid bits per pixel\n");
+    //     return result;
+    // case LOAD_PCX_INVALID_BIT_PLANES:
+    //     Log("Error: invalid bitplanes\n");
+    //     return result;
+    // case LOAD_PCX_NO_PALETTE:
+    //     Log("Warn: No palette\n");
+    //     break;
+    // }
+    // Log("---%s---\n", filename);
+    // for (int y = 0; y < bitmap.Height; y++) {
+    //     for (int x = 0; x < bitmap.Width; x++) {
+    //         Log(log_bit_mask, bitmap.Scanlines[y][x]);
+    //     }
+    //     Log("\n");
+    // }
+    // Log("---Palette---\n");
+    // for (int i = 0; i < 255; i++) {
+    //     Log("ID:%#04X R:%d G:%d B:%d \n",i, palette[i].r, palette[i].g, palette[i].b);
+    // }
+
     return result;
 }
 #endif

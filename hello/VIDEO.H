@@ -29,7 +29,16 @@ public:
     /// @brief Draw the scenes
     /// @param x 
     /// @param y 
-    void Draw(const GameObject& obj);
+
+    /// @brief Draw an Image on the backbuffer. If isn't transparent it uses memcpy. If it is 
+    /// transparent evaluates each pixel for transparency. So transparent images are potentially 
+    /// slower then opaques. Max size of an image being draw should be 320x200 (MODE_013_WIDTH and HEIGHT).
+    /// The transparent color is 0x00 in the palette. 
+    /// The palette is the palette set using SetPalette.
+    /// @param img 
+    /// @param x 
+    /// @param y 
+    /// @param transparent 
     void DrawImage(const Image& img, //what to draw 
         int16_t x, //where to draw
         int16_t y, //where to draw
