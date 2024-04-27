@@ -183,17 +183,17 @@ static uint16_t LoadFromFile(const char* filename, Image& bitmap, Color* palette
     //     Log("Warn: No palette\n");
     //     break;
     // }
-    // Log("---%s---\n", filename);
-    // for (int y = 0; y < bitmap.Height; y++) {
-    //     for (int x = 0; x < bitmap.Width; x++) {
-    //         Log(log_bit_mask, bitmap.Scanlines[y][x]);
-    //     }
-    //     Log("\n");
-    // }
-    // Log("---Palette---\n");
-    // for (int i = 0; i < 255; i++) {
-    //     Log("ID:%#04X R:%d G:%d B:%d \n",i, palette[i].r, palette[i].g, palette[i].b);
-    // }
+    Log("---%s---\n", filename);
+    for (int y = 0; y < bitmap.Height; y++) {
+        for (int x = 0; x < bitmap.Width; x++) {
+            Log(log_bit_mask, bitmap.Scanlines[y][x]);
+        }
+        Log("\n");
+    }
+    Log("---Palette---\n");
+    for (int i = 0; i < 256; i++) {
+        Log("ID:%#04X R:%d G:%d B:%d \n",i, palette[i].r, palette[i].g, palette[i].b);
+    }
 
     return result;
 }

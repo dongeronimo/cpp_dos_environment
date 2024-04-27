@@ -51,14 +51,16 @@ int main(void)
     Log("Beginning startup\n");
     InputSystem inputSystem;
     VideoSystem videoSystem;
-    videoSystem.SetClearColor(1);
+    videoSystem.SetClearColor(0x00);
     Log("Loading assets\n");
     Image img;
-    Color palette[255];
-    uint32_t err = LoadFromFile("hero.pcx", img, palette);
+    Color palette[256];
+    uint32_t err = LoadFromFile("test.pcx", img, palette);
     Log("load result = %d\n", err);
     //stores the palette in the vga
-    Log("Setting palette\n");
+    palette[0].r = 0;
+    palette[0].g = 0;
+    palette[0].b = 0;
     videoSystem.SetPalette(palette);
 
     //sets up the game tick
@@ -80,7 +82,7 @@ int main(void)
             }
         }
         videoSystem.ClearBuffer();
-        videoSystem.DrawImage(img, 0, 0,true);
+        videoSystem.DrawImage(img, 10, 10, false);
         //do draw here
         // Log("tick: %d\n", clockTicks);
         videoSystem.Present();

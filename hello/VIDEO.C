@@ -33,14 +33,21 @@ VideoSystem::~VideoSystem()
 {
     set_mode(MODE_TEXT);
 }
+/// @brief VGA uses 6 bits per color channel.
+/// @param _8bits 
+/// @return 
+inline uint8_t from8BitsTo6Bits(uint8_t _8bits){
+    float fx = ((float)_8bits) / 255.0f * 63.0f; 
+    return (uint8_t)fx;
+}
 
 void VideoSystem::SetPalette(Color *table)
 {
-    for(uint8_t i=0; i<255; i++){
+    for(int i=0; i<256; i++){
         outp(0x03c8, i);
-        outp(0x03c9, table[i].r);
-        outp(0x03c9, table[i].g);
-        outp(0x03c9, table[i].b);
+        outp(0x03c9, from8BitsTo6Bits(table[i].r));
+        outp(0x03c9, from8BitsTo6Bits(table[i].g));
+        outp(0x03c9, from8BitsTo6Bits(table[i].b));
     }
 }
 
