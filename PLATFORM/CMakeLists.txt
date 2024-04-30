@@ -15,3 +15,4 @@ add_custom_target(assets
     ${CMAKE_BINARY_DIR}/assets
 )
 add_dependencies(main assets)
+target_include_directories(main PRIVATE inc)

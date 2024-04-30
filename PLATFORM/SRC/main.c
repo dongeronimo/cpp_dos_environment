@@ -1,3 +1,4 @@
+#include "utils/LOGGER.H"
 #include <bios.h>
 #include <dpmi.h>
 #include <sys/nearptr.h>
@@ -7,6 +8,8 @@
 #define GDB_IMPLEMENTATION
 #include "gdbstub.h"
 
+#include "utils/logger.h"
+
 void set_video_mode(int mode) {
 	__dpmi_regs regs = {0};
 	regs.x.ax = mode;
@@ -14,6 +17,8 @@ void set_video_mode(int mode) {
 }
 
 int main(void) {
+	InitLogger();//turns on the logger
+	Log("Hello...\n");
 	gdb_start();
 
 	// Go mode 0x13!
@@ -48,6 +53,6 @@ int main(void) {
 	fread(file_content, 1, num_bytes, file);
 	file_content[num_bytes] = 0;
 	printf("%s\n", file_content);
-
+	Log("Goodbye\n");
 	return 0;
 }
