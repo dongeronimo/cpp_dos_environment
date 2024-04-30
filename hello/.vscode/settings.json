@@ -35,7 +35,8 @@
         "LOADBMP.C": "cpp",
         "LOGGER.C": "cpp",
         "cassert": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "SPRITE.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

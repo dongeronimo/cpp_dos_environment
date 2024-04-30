@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "LOADPCX.H"
-#include "GAMEOBJS.H"
+
 #include <conio.h>
 byte_t *VGA = (byte_t*)0xA0000L;
 
