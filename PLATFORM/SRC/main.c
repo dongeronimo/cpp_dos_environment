@@ -9,6 +9,7 @@
 #include "gdbstub.h"
 
 #include "utils/logger.h"
+#include "input/input.h"
 
 void set_video_mode(int mode) {
 	__dpmi_regs regs = {0};
@@ -23,9 +24,10 @@ int main(void) {
 
 	// Go mode 0x13!
 	set_video_mode(0x13);
-
-	// Draw 200 pixels each iteration until a key is pressed
-	while (!kbhit()) {
+	key_t key = KEY_NONE;
+	while (key != KEY_ESC) {
+		input_update_read_key();
+		key = input_read_last_key();
 		__djgpp_nearptr_enable();
 		unsigned char *vram = (unsigned char *) (__djgpp_conventional_base + 0xa0000);
 		for (int i = 0; i < 200; i++) {
@@ -40,7 +42,6 @@ int main(void) {
 		// from the debugger. You should do this in all your game loops.
 		gdb_checkpoint();
 	}
-
 	// Return to text mode
 	set_video_mode(0x3);
 
