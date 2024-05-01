@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/nearptr.h>
 #include <string.h>
+#include "image/image.h"
 #include "utils/logger.h"
 
 uint8_t backbuffer[MODE_013_ARRAY_SIZE];
@@ -19,7 +20,25 @@ void video_clear_backbuffer(uint8_t color) {
 
 void video_set_palette(color_t *table, uint16_t size) {
 	__djgpp_nearptr_enable();
-	//TODO: Set the palette
+	outp(PALETTE_INDEX, 0); /* tell the VGA that palette data
+                                         is coming. */
+#ifndef USING_6_BITS_COLORS
+	for (int i = 0; i < size; i++) {
+		outp(PALETTE_DATA, table[i].r); /* write the data */
+		outp(PALETTE_DATA, table[i].g); /* write the data */
+		outp(PALETTE_DATA, table[i].b); /* write the data */
+	}
+#else
+	for (int i = 0; i < size; i++) {
+		uint8_t r = from_8bits_to_6bits(table[i].r);
+		uint8_t g = from_8bits_to_6bits(table[i].g);
+		uint8_t b = from_8bits_to_6bits(table[i].b);
+		outp(PALETTE_DATA, r); /* write the data */
+		outp(PALETTE_DATA, g); /* write the data */
+		outp(PALETTE_DATA, b); /* write the data */
+	}
+#endif
+
 	__djgpp_nearptr_disable();
 }
 void video_draw_image(const image_t *img,//what to draw
@@ -30,12 +49,12 @@ void video_draw_image(const image_t *img,//what to draw
 	//TODO: fucked up when i gone from C++ to C
 	if ((x < 0 && abs(x) > img->Width) || x >= MODE_013_WIDTH) {
 		//Image is fully outside in the horizontal axis - wont draw
-		Log("won't draw: outside of screen (horizontal)\n");
+		// Log("won't draw: outside of screen (horizontal)\n");
 		return;
 	}
 	if ((y < 0 && y < -img->Height) || y >= MODE_013_HEIGHT) {
 		//image is fully outside in the vertical axis - wont't draw.
-		Log("won't draw: outside of screen (vertical)\n");
+		// Log("won't draw: outside of screen (vertical)\n");
 		return;
 	}
 	//calculating the initial and final positions in the backbuffer
@@ -65,8 +84,8 @@ void video_draw_image(const image_t *img,//what to draw
 	if (y + img->Height > MODE_013_HEIGHT) {
 		srcYf = img->Height - (y + img->Height - MODE_013_HEIGHT);
 	}
-	Log("Dest: x[%d,%d],y[%d, %d]\n", dstX0, dstXf, dstY0, dstYf);
-	Log("Src: x[%d,%d],y[%d, %d]\n", srcX0, srcXf, srcY0, srcYf);
+	// Log("Dest: x[%d,%d],y[%d, %d]\n", dstX0, dstXf, dstY0, dstYf);
+	// Log("Src: x[%d,%d],y[%d, %d]\n", srcX0, srcXf, srcY0, srcYf);
 	size_t line_size = (srcXf - srcX0);
 	if (!transparent) {
 		uint16_t sY = srcY0;
@@ -75,8 +94,22 @@ void video_draw_image(const image_t *img,//what to draw
 			uintptr_t src_pointer_offset = sY * (srcXf - srcX0) + srcX0;
 
 			memcpy(backbuffer + dst_pointer_offset, img->Scanlines + src_pointer_offset, line_size);
-			Log("   dst_pointer_offset=%d, src_pointer_offset=%d, line_size=%d\n",
-				dst_pointer_offset, src_pointer_offset, line_size);
+			// Log("   dst_pointer_offset=%d, src_pointer_offset=%d, line_size=%d\n",
+			// 	dst_pointer_offset, src_pointer_offset, line_size);
+			sY++;
+		}
+	} else {
+		uint16_t sY = srcY0;
+		uint16_t sX = srcX0;
+		for (uint32_t dY = dstY0; dY < dstY0 + (srcYf - srcY0); dY++) {
+			for (uint32_t dX = dstX0; dX < dstX0 + (srcXf - srcX0); dX++) {
+				uint8_t pixel = get_pixel(img, sX, sY);
+				if (pixel != 0x00) {
+					backbuffer[dY * MODE_013_WIDTH + dX] = pixel;
+				}
+				sX++;
+			}
+			sX = srcX0;
 			sY++;
 		}
 	}

@@ -32,7 +32,7 @@ int main(void) {
 	image_t test_img = {};
 	color_t palette[256];
 	load_pcx("assets/masked.pcx", &test_img, (color_t *) &palette);
-
+	video_set_palette(palette, 256);
 	key_t key = KEY_NONE;
 	uint8_t background = 0x02;
 	while (key != KEY_ESC) {
@@ -40,7 +40,7 @@ int main(void) {
 		key = input_read_last_key();// get the key
 		video_clear_backbuffer(background);
 		//TODO: draw something here
-		video_draw_image(&test_img, 10, 10, false);
+		video_draw_image(&test_img, 10, 10, true);
 		video_present();
 		// Set a GDB checkpoint, needed to receive interrupt commands
 		// from the debugger. You should do this in all your game loops.

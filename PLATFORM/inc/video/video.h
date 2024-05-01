@@ -3,7 +3,9 @@
 #include "types.h"
 #include "image/image.h"
 #include <dpmi.h>
-
+#include <stdint.h>
+#define PALETTE_INDEX 0x03c8
+#define PALETTE_DATA 0x03c9
 #define MODE_TEXT 0x03
 #define MODE_13H 0X13
 #define MODE_013_ARRAY_SIZE 64000
@@ -32,4 +34,11 @@ void video_draw_image(const image_t *img,//what to draw
 void video_present();
 ///Destroys the backbuffer
 void video_destroy_backbuffer_for_mode13();
+
+///It seems that the VGA stores the color using 6 bits instead of 8. So i have to
+///take the 8 bits colors and convert them to 6 bits colors
+static inline uint8_t from_8bits_to_6bits(uint8_t _8bits) {
+	float fx = ((float) _8bits) / 255.0f * 63.0f;
+	return (uint8_t) fx;
+}
 #endif
