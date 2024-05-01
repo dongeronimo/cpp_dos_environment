@@ -31,7 +31,7 @@ int main(void) {
 	// load assets
 	image_t test_img = {};
 	color_t palette[256];
-	load_pcx("assets/masked.pcx", &test_img, (color_t *) &palette);
+	load_pcx("assets/woman.pcx", &test_img, (color_t *) &palette);
 	video_set_palette(palette, 256);
 	key_t key = KEY_NONE;
 	uint8_t background = 0x02;

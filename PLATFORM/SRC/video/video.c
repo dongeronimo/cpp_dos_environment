@@ -61,15 +61,15 @@ void video_draw_image(const image_t *img,//what to draw
 	int dstX0 = x;
 	if (x < 0)
 		dstX0 = 0;
-	int dstXf = dstX0 + img->Width;
-	if (x + img->Width > MODE_013_WIDTH)
-		dstXf = MODE_013_WIDTH;
+	// int dstXf = dstX0 + img->Width;
+	// if (x + img->Width > MODE_013_WIDTH)
+	// 	dstXf = MODE_013_WIDTH;
 	int dstY0 = y;
 	if (y < 0)
 		dstY0 = 0;
-	int dstYf = dstY0 + img->Width;
-	if (y + img->Height > MODE_013_HEIGHT)
-		dstYf = MODE_013_HEIGHT;
+	// int dstYf = dstY0 + img->Width;
+	// if (y + img->Height > MODE_013_HEIGHT)
+	// dstYf = MODE_013_HEIGHT;
 	//calculating the initial and final position in the image
 	int srcX0 = 0, srcXf = img->Width, srcY0 = 0, srcYf = img->Height;
 	if (x < 0) {

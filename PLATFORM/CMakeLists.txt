@@ -16,3 +16,4 @@ add_custom_target(assets
 )
 add_dependencies(main assets)
 target_include_directories(main PRIVATE inc)
+target_compile_definitions(main PRIVATE USING_6_BITS_COLORS)
