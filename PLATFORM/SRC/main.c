@@ -1,49 +1,60 @@
+// #include "dpmi.h"
+#include "image/image.h"
 #include "utils/LOGGER.H"
-#include <bios.h>
-#include <dpmi.h>
-#include <sys/nearptr.h>
+// #include <bios.h>
+// #include <dpmi.h>
+// #include <sys/nearptr.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #define GDB_IMPLEMENTATION
 #include "gdbstub.h"
 
-#include "utils/logger.h"
+#include "utils/LOGGER.H"
 #include "input/input.h"
-
-void set_video_mode(int mode) {
-	__dpmi_regs regs = {0};
-	regs.x.ax = mode;
-	__dpmi_int(0x10, &regs);
-}
+#include "video/video.h"
+#include "asstload/pcxload.h"
+// void set_video_mode(int mode) {
+// 	__dpmi_regs regs = {0};
+// 	regs.x.ax = mode;
+// 	__dpmi_int(0x10, &regs);
+// }
 
 int main(void) {
+	gdb_start();
 	InitLogger();//turns on the logger
 	Log("Hello...\n");
-	gdb_start();
-
 	// Go mode 0x13!
-	set_video_mode(0x13);
+	video_set_mode(0x13);
+	video_init_backbuffer_for_mode13();
+	// load assets
+	image_t test_img = {};
+	color_t palette[256];
+	load_pcx("assets/gradient.pcx", &test_img, (color_t *) &palette);
+	// for (uint16_t y = 0; y < test_img.Height; y++) {
+	// 	for (uint16_t x = 0; x < test_img.Width; x++) {
+	// 		Log(log_bit_mask, get_pixel(&test_img, x, y));
+	// 	}
+	// 	Log("\n");
+	// }
 	key_t key = KEY_NONE;
+	uint8_t background = 0x02;
 	while (key != KEY_ESC) {
-		input_update_read_key();
-		key = input_read_last_key();
-		__djgpp_nearptr_enable();
-		unsigned char *vram = (unsigned char *) (__djgpp_conventional_base + 0xa0000);
-		for (int i = 0; i < 200; i++) {
-			int x = rand() % 320;
-			int y = rand() % 200;
-			int color = rand() % 255;
-			vram[x + y * 320] = color;
-		}
-		__djgpp_nearptr_disable();
-
+		input_update_read_key();    //read the keyboard
+		key = input_read_last_key();// get the key
+		video_clear_backbuffer(background);
+		//TODO: draw something here
+		video_draw_image(&test_img, 10, 10, false);
+		video_present();
 		// Set a GDB checkpoint, needed to receive interrupt commands
 		// from the debugger. You should do this in all your game loops.
 		gdb_checkpoint();
 	}
+	video_destroy_backbuffer_for_mode13();
 	// Return to text mode
-	set_video_mode(0x3);
+	video_set_mode(MODE_TEXT);
+	// set_video_mode(0x3);
 
 	// Read an asset file and print its content
 	FILE *file = fopen("assets/test.txt", "r");

@@ -10,7 +10,7 @@ void InitLogger() {
 	loggerIsInitialized = 1;
 }
 
-void Log(char *str, ...) {
+void Log(const char *str, ...) {
 	assert(loggerIsInitialized == 1);
 	va_list ptr;
 	va_start(ptr, str);
