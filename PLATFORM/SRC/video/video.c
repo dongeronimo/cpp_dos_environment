@@ -1,17 +1,13 @@
 #include "video/video.h"
 #include <bios.h>
+#include <stdint.h>
 #include <dpmi.h>
 #include <stdlib.h>
 #include <sys/nearptr.h>
 #include <string.h>
+#include "utils/logger.h"
 
 uint8_t backbuffer[MODE_013_ARRAY_SIZE];
-
-// inline void video_set_mode(uint8_t mode) {
-// 	__dpmi_regs regs = {0};
-// 	regs.x.ax = mode;
-// 	__dpmi_int(0x10, &regs);
-// }
 
 void video_init_backbuffer_for_mode13() {
 	//I use backbuffer, no need for dynamic allocation
@@ -32,43 +28,58 @@ void video_draw_image(const image_t *img,//what to draw
 					  bool_t transparent //should I use the transparent code path?
 ) {
 	//TODO: fucked up when i gone from C++ to C
-	// if ((x < 0 && abs(x) > img->Width) || x >= MODE_013_WIDTH) {
-	// 	//Image is fully outside in the horizontal axis - wont draw
-	// 	return;
-	// }
-	// if ((y < 0 && y < -img->Height) || y >= MODE_013_HEIGHT) {
-	// 	//image is fully outside in the vertical axis - wont't draw.
-	// 	return;
-	// }
-	// //calculating the initial and final positions in the backbuffer
-	// int dstX0 = x;
-	// if (x < 0)
-	// 	dstX0 = 0;
-	// int dstXf = dstX0 + img->Width;
-	// if (x + img->Width > MODE_013_WIDTH)
-	// 	dstXf = MODE_013_WIDTH;
-	// int dstY0 = y;
-	// if (y < 0)
-	// 	dstY0 = 0;
-	// int dstYf = dstY0 + img->Width;
-	// if (y + img->Height > MODE_013_HEIGHT)
-	// 	dstYf = MODE_013_HEIGHT;
-	// //calculating the initial and final position in the image
-	// int srcX0 = 0, srcXf = img->Width, srcY0 = 0, srcYf = img->Height;
-	// if (x < 0) {
-	// 	srcX0 = x * -1;
-	// }
-	// if (y < 0) {
-	// 	srcY0 = y * -1;
-	// }
-	// if (x + img->Width > MODE_013_WIDTH) {
-	// 	srcXf = img->Width - (x + img->Width - MODE_013_WIDTH);
-	// }
-	// if (y + img->Height > MODE_013_HEIGHT) {
-	// 	srcYf = img->Height - (y + img->Height - MODE_013_HEIGHT);
-	// }
-	// // Log("Dest: x[%d,%d],y[%d, %d]\n", dstX0, dstXf, dstY0, dstYf);
-	// // Log("Src: x[%d,%d],y[%d, %d]\n", srcX0, srcXf, srcY0, srcYf);
+	if ((x < 0 && abs(x) > img->Width) || x >= MODE_013_WIDTH) {
+		//Image is fully outside in the horizontal axis - wont draw
+		Log("won't draw: outside of screen (horizontal)\n");
+		return;
+	}
+	if ((y < 0 && y < -img->Height) || y >= MODE_013_HEIGHT) {
+		//image is fully outside in the vertical axis - wont't draw.
+		Log("won't draw: outside of screen (vertical)\n");
+		return;
+	}
+	//calculating the initial and final positions in the backbuffer
+	int dstX0 = x;
+	if (x < 0)
+		dstX0 = 0;
+	int dstXf = dstX0 + img->Width;
+	if (x + img->Width > MODE_013_WIDTH)
+		dstXf = MODE_013_WIDTH;
+	int dstY0 = y;
+	if (y < 0)
+		dstY0 = 0;
+	int dstYf = dstY0 + img->Width;
+	if (y + img->Height > MODE_013_HEIGHT)
+		dstYf = MODE_013_HEIGHT;
+	//calculating the initial and final position in the image
+	int srcX0 = 0, srcXf = img->Width, srcY0 = 0, srcYf = img->Height;
+	if (x < 0) {
+		srcX0 = x * -1;
+	}
+	if (y < 0) {
+		srcY0 = y * -1;
+	}
+	if (x + img->Width > MODE_013_WIDTH) {
+		srcXf = img->Width - (x + img->Width - MODE_013_WIDTH);
+	}
+	if (y + img->Height > MODE_013_HEIGHT) {
+		srcYf = img->Height - (y + img->Height - MODE_013_HEIGHT);
+	}
+	Log("Dest: x[%d,%d],y[%d, %d]\n", dstX0, dstXf, dstY0, dstYf);
+	Log("Src: x[%d,%d],y[%d, %d]\n", srcX0, srcXf, srcY0, srcYf);
+	size_t line_size = (srcXf - srcX0);
+	if (!transparent) {
+		uint16_t sY = srcY0;
+		for (uint32_t dY = dstY0; dY < dstY0 + (srcYf - srcY0); dY++) {
+			uintptr_t dst_pointer_offset = dY * MODE_013_WIDTH + x;
+			uintptr_t src_pointer_offset = sY * (srcXf - srcX0) + srcX0;
+
+			memcpy(backbuffer + dst_pointer_offset, img->Scanlines + src_pointer_offset, line_size);
+			Log("   dst_pointer_offset=%d, src_pointer_offset=%d, line_size=%d\n",
+				dst_pointer_offset, src_pointer_offset, line_size);
+			sY++;
+		}
+	}
 	// //now that i have the ranges I can copy from the image to the backbuffer
 	// if (!transparent) {
 	// 	//if it's not transparent i can just memcpy the scanlines into the backbuffer,

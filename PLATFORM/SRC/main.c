@@ -31,13 +31,8 @@ int main(void) {
 	// load assets
 	image_t test_img = {};
 	color_t palette[256];
-	load_pcx("assets/gradient.pcx", &test_img, (color_t *) &palette);
-	// for (uint16_t y = 0; y < test_img.Height; y++) {
-	// 	for (uint16_t x = 0; x < test_img.Width; x++) {
-	// 		Log(log_bit_mask, get_pixel(&test_img, x, y));
-	// 	}
-	// 	Log("\n");
-	// }
+	load_pcx("assets/masked.pcx", &test_img, (color_t *) &palette);
+
 	key_t key = KEY_NONE;
 	uint8_t background = 0x02;
 	while (key != KEY_ESC) {
