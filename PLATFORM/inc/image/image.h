@@ -1,6 +1,7 @@
 #ifndef __image_h
 #define __image_h
 #include "types.h"
+#include <stdint.h>
 /// @brief Defines an image, with a given width, height and it's pixels in a array
 /// scanlines. Images are loaded using loadpcx.h.
 typedef struct image_t {
@@ -17,4 +18,6 @@ typedef struct color_t {
 inline static uint8_t get_pixel(const image_t *img, uint16_t x, uint16_t y) {
 	return img->Scanlines[y * img->Width + x];
 }
+
+
 #endif

@@ -1,5 +1,6 @@
 #ifndef __video_h
 #define __video_h
+#include "asstload/assetld.h"
 #include "types.h"
 #include "image/image.h"
 #include <dpmi.h>
@@ -30,6 +31,8 @@ void video_draw_image(const image_t *img,//what to draw
 					  int16_t y,         //where to draw
 					  bool_t transparent //should I use the transparent code path?
 );
+void video_draw_sprite(const image_t *sheet,
+					   int16_t x, int16_t y, sprite_desc_t *sprite);
 ///Copies content from the backbuffer to the gpu
 void video_present();
 ///Destroys the backbuffer

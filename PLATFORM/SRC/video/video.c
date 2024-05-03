@@ -41,6 +41,48 @@ void video_set_palette(color_t *table, uint16_t size) {
 
 	__djgpp_nearptr_disable();
 }
+
+void video_draw_sprite(const image_t *sheet, int16_t x, int16_t y, sprite_desc_t *sprite) {
+	//TODO: Clipping
+	//TODO: Draw the sprite at the correct xy
+	//TODO: Mirroring
+	for (uint16_t src_y = sprite->y0; src_y < sprite->y1; src_y++) {
+		for (uint16_t src_x = sprite->x0; src_x < sprite->x1; src_x++) {
+			uint8_t pixel = get_pixel(sheet, src_x, src_y);
+			if (pixel != 0x00 && pixel != 0xff)
+				backbuffer[src_y * MODE_013_WIDTH + src_x] = pixel;
+		}
+	}
+	// uint16_t sprite_width = sprite->x1 - sprite->x0;
+	// uint16_t sprite_height = sprite->y1 - sprite->y0;
+	// uint16_t src_x0 = sprite->x0;
+	// uint16_t src_x1 = sprite->x1;
+	// uint16_t src_y0 = sprite->y0;
+	// uint16_t src_y1 = sprite->y1;
+	// uint16_t dst_y0 = y;
+	// uint16_t dst_y1 = y + sprite_height;
+	// uint16_t dst_x0 = x;
+	// uint16_t dst_x1 = x + sprite_width;
+
+	// uint16_t sx = src_x0;
+	// uint16_t sy = src_y0;
+	// uint32_t dst_idx = 0;
+	// for (uint16_t dy = dst_y0; dy < dst_y1; dy++) {    //for each line in the destination
+	// 	for (uint16_t dx = dst_x0; dx < dst_x1; dx++) {//for each column in the destination
+	// 		//get the source pixel
+	// 		uint8_t pixel = get_pixel(sheet, sx, sy);
+	// 		//write in dest if not 0x00
+	// 		if (pixel != 0x00) {
+	// 			dst_idx = dy * MODE_013_WIDTH + dx;
+	// 			backbuffer[dst_idx] = pixel;
+	// 		}
+	// 		sx++;
+	// 	}
+	// 	sy++;
+	// 	sx = 0;
+	// }
+}
+
 void video_draw_image(const image_t *img,//what to draw
 					  int16_t x,         //where to draw
 					  int16_t y,         //where to draw
