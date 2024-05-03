@@ -44,14 +44,19 @@ void video_set_palette(color_t *table, uint16_t size) {
 
 void video_draw_sprite(const image_t *sheet, int16_t x, int16_t y, sprite_desc_t *sprite) {
 	//TODO: Clipping
-	//TODO: Draw the sprite at the correct xy
+	//TODO: Mirroring
+	uint16_t dx = x;
+	uint16_t dy = y;
 	//TODO: Mirroring
 	for (uint16_t src_y = sprite->y0; src_y < sprite->y1; src_y++) {
 		for (uint16_t src_x = sprite->x0; src_x < sprite->x1; src_x++) {
 			uint8_t pixel = get_pixel(sheet, src_x, src_y);
 			if (pixel != 0x00 && pixel != 0xff)
-				backbuffer[src_y * MODE_013_WIDTH + src_x] = pixel;
+				backbuffer[dy * MODE_013_WIDTH + dx] = pixel;
+			dx++;
 		}
+		dx = x;
+		dy++;
 	}
 	// uint16_t sprite_width = sprite->x1 - sprite->x0;
 	// uint16_t sprite_height = sprite->y1 - sprite->y0;

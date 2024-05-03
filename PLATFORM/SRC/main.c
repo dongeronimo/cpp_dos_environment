@@ -39,7 +39,7 @@ int main(void) {
 		key = input_read_last_key();// get the key
 		video_clear_backbuffer(background);
 		sprite_desc_t current_sprite = p_elf_asset->sprite_list[p_elf_asset->animation_list[elf_current_animation].sprites_ids[elf_current_sprite]];
-		video_draw_sprite(&elf_sheet, 0, 0, &current_sprite);
+		video_draw_sprite(&elf_sheet, 52, 25, &current_sprite);
 		// video_draw_image(&test_img, 10, 10, true);
 		video_present();
 		// Set a GDB checkpoint, needed to receive interrupt commands
